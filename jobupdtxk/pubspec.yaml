@@ -1,0 +1,37 @@
+name: jobupdtxk
+description: "jobupdtxk — Job listings & application tracker for Government, PSU, IT and Core jobs."
+publish_to: 'none'
+version: 1.0.1+2
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # State management
+  provider: ^6.1.2
+
+  # Networking (wire up a real JobRepository implementation later)
+  http: ^1.2.1
+
+  # Utilities
+  intl: ^0.19.0
+  url_launcher: ^6.2.6
+  shared_preferences: ^2.2.3
+
+  # Premium typography
+  google_fonts: ^6.2.1
+  flutter_localizations:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
