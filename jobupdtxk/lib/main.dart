@@ -4,11 +4,21 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'data/mock_job_repository.dart';
+import 'data/mock_question_repository.dart';
+import 'data/exam_repository.dart';
+import 'data/result_repository.dart';
+import 'data/progress_repository.dart';
 import 'services/local_storage_service.dart';
+
 import 'providers/job_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/tracker_provider.dart';
 import 'providers/profile_provider.dart';
+import 'providers/question_provider.dart';
+import 'providers/exam_provider.dart';
+import 'providers/result_provider.dart';
+import 'providers/progress_provider.dart';
+
 import 'screens/main_shell.dart';
 import 'screens/onboarding_screen.dart';
 import 'theme/app_theme.dart';
@@ -19,27 +29,31 @@ void main() async {
   final storageService = LocalStorageService();
   await storageService.init();
 
-  runApp(JobUpdtxkApp(storageService: storageService));
+  runApp(YajvikApp(storageService: storageService));
 }
 
-class JobUpdtxkApp extends StatelessWidget {
+class YajvikApp extends StatelessWidget {
   final LocalStorageService storageService;
   
-  const JobUpdtxkApp({super.key, required this.storageService});
+  const YajvikApp({super.key, required this.storageService});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => JobProvider(MockJobRepository())),
+        ChangeNotifierProvider(create: (_) => JobProvider(MockJobRepository(), storageService.prefs)),
         ChangeNotifierProvider(create: (_) => TrackerProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider(storageService)),
+        ChangeNotifierProvider(create: (_) => QuestionProvider(MockQuestionRepository(storageService.prefs))),
+        ChangeNotifierProvider(create: (_) => ExamProvider(MockExamRepository(storageService.prefs))),
+        ChangeNotifierProvider(create: (_) => ResultProvider(MockResultRepository())),
+        ChangeNotifierProvider(create: (_) => ProgressProvider(ProgressRepository(storageService.prefs))),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, _) {
           return MaterialApp(
-            title: 'jobupdtxk',
+            title: 'YAJVIK',
             debugShowCheckedModeBanner: false,
             themeMode: themeProvider.mode,
             theme: AppTheme.light(),

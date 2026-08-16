@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../theme/app_theme.dart';
 import '../providers/profile_provider.dart';
 import '../models/user_profile.dart';
 
@@ -173,13 +174,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            'JOBUPDTXK',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.5,
-            ),
+          Text(
+            'YAJVIK',
+            style: AppTheme.brandTextStyle(context).copyWith(color: Colors.white, fontSize: 32),
           ),
           const SizedBox(height: 48),
           const Text('Government Jobs.\nPreparation.\nYour Future.', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, height: 1.4), textAlign: TextAlign.center),
@@ -194,7 +191,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Your profile information is stored locally on this device.\nJOBUPDTXK does not require an account.',
+            'Your profile information is stored locally on this device.\nYAJVIK does not require an account.',
             style: TextStyle(fontSize: 12, color: theme.colorScheme.outline),
             textAlign: TextAlign.center,
           )

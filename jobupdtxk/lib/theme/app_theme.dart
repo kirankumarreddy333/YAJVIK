@@ -20,6 +20,13 @@ class AppColors {
 }
 
 class AppTheme {
+  static TextStyle brandTextStyle(BuildContext context) {
+    return GoogleFonts.montserrat(
+      fontWeight: FontWeight.w900,
+      letterSpacing: 2.0,
+    );
+  }
+
   static ThemeData light() {
     final base = ThemeData(
       brightness: Brightness.light,

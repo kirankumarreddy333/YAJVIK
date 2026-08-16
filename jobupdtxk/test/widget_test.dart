@@ -16,6 +16,6 @@ void main() {
     final storageService = LocalStorageService();
     await storageService.init();
 
-    await tester.pumpWidget(JobUpdtxkApp(storageService: storageService));
+    await tester.pumpWidget(YajvikApp(storageService: storageService));
   });
 }

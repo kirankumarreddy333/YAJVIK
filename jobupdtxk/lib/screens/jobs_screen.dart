@@ -16,7 +16,7 @@ class JobsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('jobupdtxk'),
+        title: const Text('YAJVIK Jobs'),
         actions: [
           IconButton(
             tooltip: 'Bookmarks',

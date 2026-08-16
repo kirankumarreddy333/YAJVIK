@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/profile_provider.dart';
-import '../providers/theme_provider.dart';
+import 'settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -162,83 +163,46 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
-
-          // Settings
-          const Text('Settings', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
+          // Settings Link
           ListTile(
-            leading: Icon(theme.brightness == Brightness.dark ? Icons.dark_mode : Icons.light_mode),
-            title: const Text('Dark Mode'),
-            trailing: Switch(
-              value: theme.brightness == Brightness.dark,
-              onChanged: (_) => context.read<ThemeProvider>().toggle(),
-            ),
-          ),
-          _ActionTile(
-            icon: Icons.delete_forever,
-            title: 'Delete My Local Profile',
-            color: Colors.red,
-            onTap: () async {
-              final confirm = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Delete Local Profile'),
-                  content: const Text('This will remove your saved profile and preferences from this device.\n\nAre you sure?'),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true), 
-                      style: TextButton.styleFrom(foregroundColor: Colors.red),
-                      child: const Text('Delete')
-                    ),
-                  ],
-                ),
-              );
-              if (confirm == true) {
-                await profileProvider.deleteProfile();
-              }
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            subtitle: const Text('Theme, About, Privacy, etc.'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
             },
           ),
-
           const SizedBox(height: 60),
 
           // Signature Footer
           Center(
             child: Column(
               children: [
-                Text(
-                  '━━━━━━━━━━━━━━━━━━',
-                  style: TextStyle(color: theme.colorScheme.outline.withOpacity(0.3)),
-                ),
-                const SizedBox(height: 24),
                 const Text(
-                  'XK',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2),
+                  'YAJVIK',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 2),
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'JOBUPDTXK',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 3),
-                ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
-                  'Government Jobs • Preparation • Progress',
-                  style: TextStyle(fontSize: 11, color: theme.colorScheme.outline),
+                  'A product by XK',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: theme.colorScheme.outline),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  'Built for every government job aspirant.',
-                  style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: theme.colorScheme.outline),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Product by XK',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  '━━━━━━━━━━━━━━━━━━',
-                  style: TextStyle(color: theme.colorScheme.outline.withOpacity(0.3)),
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 12,
+                  children: [
+                    Text('About', style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                    Text('·', style: TextStyle(color: theme.colorScheme.outline)),
+                    Text('Privacy', style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                    Text('·', style: TextStyle(color: theme.colorScheme.outline)),
+                    Text('Terms', style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                    Text('·', style: TextStyle(color: theme.colorScheme.outline)),
+                    Text('Disclaimer', style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                    Text('·', style: TextStyle(color: theme.colorScheme.outline)),
+                    Text('Contact', style: TextStyle(fontSize: 12, color: theme.colorScheme.primary)),
+                  ],
                 ),
               ],
             ),
@@ -277,22 +241,3 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-class _ActionTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-  final Color? color;
-
-  const _ActionTile({required this.icon, required this.title, required this.onTap, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: color),
-      title: Text(title, style: TextStyle(color: color)),
-      trailing: const Icon(Icons.chevron_right),
-      onTap: onTap,
-      contentPadding: EdgeInsets.zero,
-    );
-  }
-}

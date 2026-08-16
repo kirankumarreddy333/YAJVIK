@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/job_repository.dart';
 import '../models/government_job.dart';
 
 class JobProvider extends ChangeNotifier {
   final JobRepository repository;
+  final SharedPreferences prefs;
 
-  JobProvider(this.repository) {
+  JobProvider(this.repository, this.prefs) {
     loadJobs();
   }
 
@@ -60,6 +62,14 @@ class JobProvider extends ChangeNotifier {
     notifyListeners();
     try {
       _jobs = await repository.fetchJobs();
+      
+      // Load bookmarks
+      final savedBookmarks = prefs.getStringList('bookmarks') ?? [];
+      for (var job in _jobs) {
+        if (savedBookmarks.contains(job.id)) {
+          job.isBookmarked = true;
+        }
+      }
     } catch (e) {
       _error = 'Could not load jobs. Pull to refresh to try again.';
     }
@@ -93,9 +103,19 @@ class JobProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleBookmark(String jobId) {
+  void toggleBookmark(String jobId) async {
     final job = _jobs.firstWhere((j) => j.id == jobId);
     job.isBookmarked = !job.isBookmarked;
+    
+    // Save to SharedPreferences
+    final savedBookmarks = prefs.getStringList('bookmarks') ?? [];
+    if (job.isBookmarked) {
+      if (!savedBookmarks.contains(jobId)) savedBookmarks.add(jobId);
+    } else {
+      savedBookmarks.remove(jobId);
+    }
+    await prefs.setStringList('bookmarks', savedBookmarks);
+    
     notifyListeners();
   }
 

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'jobs_screen.dart';
 import 'preparation_screen.dart';
-import 'practice_screen.dart';
 import 'tracker_screen.dart';
+import 'profile_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -19,8 +19,8 @@ class _MainShellState extends State<MainShell> {
     HomeScreen(),
     JobsScreen(),
     PreparationScreen(),
-    PracticeScreen(),
     TrackerScreen(),
+    ProfileScreen(),
   ];
 
   @override
@@ -42,19 +42,19 @@ class _MainShellState extends State<MainShell> {
             label: 'Jobs',
           ),
           NavigationDestination(
-            icon: Icon(Icons.book_outlined),
-            selectedIcon: Icon(Icons.book),
+            icon: Icon(Icons.menu_book_outlined),
+            selectedIcon: Icon(Icons.menu_book),
             label: 'Preparation',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.quiz_outlined),
-            selectedIcon: Icon(Icons.quiz),
-            label: 'Practice',
           ),
           NavigationDestination(
             icon: Icon(Icons.checklist_rtl_outlined),
             selectedIcon: Icon(Icons.checklist_rtl),
             label: 'Tracker',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),

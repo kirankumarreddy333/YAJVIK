@@ -2,21 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/job_provider.dart';
+import '../providers/progress_provider.dart';
+import '../providers/question_provider.dart';
+import '../theme/app_theme.dart';
 import '../widgets/job_card.dart';
 import 'job_detail_screen.dart';
-import 'profile_screen.dart';
+import 'daily_questions_screen.dart';
+import 'progress_screen.dart';
+import 'results_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<QuestionProvider>().loadTodayQuestions();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final profile = context.watch<ProfileProvider>().profile;
     final allJobs = context.watch<JobProvider>().jobs;
+    final progressProvider = context.watch<ProgressProvider>();
+    final questionProvider = context.watch<QuestionProvider>();
     
     final recommendedJobs = allJobs.where((j) {
       if (profile == null) return false;
-      // Simple matching logic: matches any target category or is all-india
       bool matchesTarget = profile.targetJobs.isEmpty || profile.targetJobs.contains(j.category.name);
       bool matchesState = j.state == 'All India' || j.state == profile.state;
       return matchesTarget && matchesState;
@@ -24,12 +43,12 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('JOBUPDTXK'),
+        title: Text('YAJVIK', style: AppTheme.brandTextStyle(context)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_outline),
+            icon: const Icon(Icons.notifications_outlined),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+              // Notification mock
             },
           )
         ],
@@ -39,40 +58,174 @@ class HomeScreen extends StatelessWidget {
         children: [
           Text('Good morning, ${profile?.name.split(' ').first ?? 'User'} 👋', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
-          // Goal Card
+          
+          // Dashboard Top Row: Streak and Progress
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ProgressScreen()));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.local_fire_department, color: Colors.orange),
+                            const SizedBox(width: 8),
+                            Text('Streak', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text('${progressProvider.currentStreak} Days', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 18, fontWeight: FontWeight.w900)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ProgressScreen()));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                         Row(
+                          children: [
+                            Icon(Icons.timeline, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                            const SizedBox(width: 8),
+                            Text('Progress', style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text('View Details', style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer, fontSize: 16, fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          
+          // Daily Question Section
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('🎯 My AIM', style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(
-                  profile?.targetJobs.isNotEmpty == true 
-                      ? profile!.targetJobs.join(', ')
-                      : 'Explore Government Jobs', 
-                  style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('🧠 Daily Questions', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text('${questionProvider.completedCount} / 4', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ],
                 ),
+                const SizedBox(height: 12),
+                if (questionProvider.isLoading)
+                   const Center(child: CircularProgressIndicator())
+                else if (questionProvider.isGoalCompleted)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('🎉 Daily Goal Complete!', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green)),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: () {
+                             Navigator.push(context, MaterialPageRoute(builder: (_) => const DailyQuestionsScreen()));
+                          },
+                          child: const Text('Review Answers'),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Boost your prep with 4 quick questions.', style: TextStyle(fontSize: 14)),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FilledButton(
+                          onPressed: () {
+                             Navigator.push(context, MaterialPageRoute(builder: (_) => const DailyQuestionsScreen()));
+                          },
+                          child: const Text('Attempt Today\'s Goal'),
+                        ),
+                      ),
+                    ],
+                  )
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              const Icon(Icons.local_fire_department, color: Colors.orange),
-              const SizedBox(width: 8),
-              Text('${profile?.currentStreak ?? 0} Day Streak', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            ],
-          ),
+
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Recommended for you', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              const Text('Upcoming Results', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ResultsScreen()));
+                }, 
+                child: const Text('See all')
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5)),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.event_available, color: Colors.blue),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('SSC CGL 2025 Tier 1', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Expected by 26 Aug 2026', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Recommended Jobs', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
               TextButton(onPressed: () {}, child: const Text('See all')),
             ],
           ),
@@ -88,46 +241,9 @@ class HomeScreen extends StatelessWidget {
                 onBookmarkTap: () => context.read<JobProvider>().toggleBookmark(job.id),
               ),
             )),
-            
-          const SizedBox(height: 24),
-          
-          // Daily Question
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.3)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('🧠 Daily Question', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(color: Colors.green.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
-                      child: const Text('+10 XP', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                const Text('Question of the Day', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: () {},
-                    child: const Text('Attempt Now'),
-                  ),
-                ),
-              ],
-            ),
-          )
         ],
       ),
     );
   }
 }
+

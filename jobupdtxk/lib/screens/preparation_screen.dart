@@ -1,83 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/exam_provider.dart';
+import 'syllabus_screen.dart';
 
-class PreparationScreen extends StatelessWidget {
+class PreparationScreen extends StatefulWidget {
   const PreparationScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Preparation')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          const Text('Focus on your AIM', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          const Text('Top requested study materials and previous papers for your target exams.'),
-          const SizedBox(height: 24),
-          _buildCategory(
-            context,
-            'Syllabus & Pattern',
-            Icons.menu_book,
-            [
-              'UPSC CSE Prelims & Mains Syllabus',
-              'SSC CGL Tier 1 & Tier 2 Pattern',
-              'IBPS PO Prelims Pattern',
-              'RRB JE Syllabus 2026',
-            ],
-          ),
-          const SizedBox(height: 20),
-          _buildCategory(
-            context,
-            'Previous Year Papers (PYQ)',
-            Icons.history_edu,
-            [
-              'UPSC CSE 2025 Prelims Paper 1',
-              'SSC CGL 2024 Tier 1 All Shifts',
-              'IBPS PO 2024 Memory Based',
-            ],
-          ),
-          const SizedBox(height: 20),
-          _buildCategory(
-            context,
-            'Current Affairs',
-            Icons.newspaper,
-            [
-              'August 2026 Monthly Digest',
-              'Daily Current Affairs - 15 Aug',
-              'Economic Survey 2026 Highlights',
-            ],
-          ),
-          const SizedBox(height: 40),
-        ],
-      ),
-    );
+  State<PreparationScreen> createState() => _PreparationScreenState();
+}
+
+class _PreparationScreenState extends State<PreparationScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ExamProvider>().loadExams();
+    });
   }
 
-  Widget _buildCategory(BuildContext context, String title, IconData icon, List<String> items) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(width: 8),
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        const SizedBox(height: 12),
-        ...items.map((item) => Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5)),
-              ),
-              child: ListTile(
-                title: Text(item, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                trailing: Icon(Icons.download_rounded, color: Theme.of(context).colorScheme.secondary),
-                onTap: () {},
-              ),
-            )),
-      ],
+  @override
+  Widget build(BuildContext context) {
+    final examProvider = context.watch<ExamProvider>();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Preparation')),
+      body: examProvider.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                const Text('Choose Your Goal', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                const Text('Select an exam to view its complete syllabus, track progress, and access learning resources.'),
+                const SizedBox(height: 24),
+                ...examProvider.exams.map((exam) => Card(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5)),
+                      ),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => SyllabusScreen(exam: exam)));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  exam.category,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(exam.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 8),
+                              Text(exam.overview, style: const TextStyle(height: 1.4)),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Text('${exam.syllabus.length} Topics', style: const TextStyle(fontWeight: FontWeight.w600)),
+                                  const Spacer(),
+                                  const Icon(Icons.arrow_forward),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )),
+              ],
+            ),
     );
   }
 }
+

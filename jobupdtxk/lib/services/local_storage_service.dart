@@ -5,6 +5,8 @@ class LocalStorageService {
   static const String _profileKey = 'user_profile_data';
   SharedPreferences? _prefs;
 
+  SharedPreferences get prefs => _prefs!;
+
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
   }

@@ -136,21 +136,38 @@ class JobDetailScreen extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    final uri = Uri.tryParse(job.officialWebsite);
-                    if (uri != null) await launchUrl(uri);
-                  },
-                  icon: const Icon(Icons.open_in_new),
-                  label: const Text('Notification'),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final uri = Uri.tryParse(job.officialWebsite);
+                        if (uri != null) await launchUrl(uri);
+                      },
+                      icon: const Icon(Icons.picture_as_pdf),
+                      label: const Text('Notification'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () async {
+                        final uri = Uri.tryParse(job.applyLink);
+                        if (uri != null) await launchUrl(uri);
+                      },
+                      icon: const Icon(Icons.open_in_new),
+                      label: const Text('Apply Officially'),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton.icon(
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.tonalIcon(
                   onPressed: tracked
                       ? null
                       : () => context.read<TrackerProvider>().track(job),
