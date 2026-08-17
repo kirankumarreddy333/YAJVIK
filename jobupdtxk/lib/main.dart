@@ -12,6 +12,7 @@ import 'services/local_storage_service.dart';
 
 import 'providers/job_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/locale_provider.dart';
 import 'providers/tracker_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/question_provider.dart';
@@ -42,6 +43,7 @@ class YajvikApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider(storageService.prefs)),
         ChangeNotifierProvider(create: (_) => JobProvider(MockJobRepository(), storageService.prefs)),
         ChangeNotifierProvider(create: (_) => TrackerProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider(storageService)),
@@ -50,14 +52,15 @@ class YajvikApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ResultProvider(MockResultRepository())),
         ChangeNotifierProvider(create: (_) => ProgressProvider(ProgressRepository(storageService.prefs))),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
+      child: Consumer2<ThemeProvider, LocaleProvider>(
+        builder: (context, themeProvider, localeProvider, _) {
           return MaterialApp(
             title: 'YAJVIK',
             debugShowCheckedModeBanner: false,
             themeMode: themeProvider.mode,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
+            locale: localeProvider.locale,
             localizationsDelegates: const [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,

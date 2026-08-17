@@ -23,6 +23,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String _name = '';
   String _mobileNumber = '';
   String _dateOfBirth = '';
+  String _state = 'Delhi';
   String _education = 'B.Tech';
   String _branch = 'ECE';
   String _graduationYear = '2026';
@@ -57,6 +58,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       name: _name.isEmpty ? 'Aspirant' : _name,
       mobileNumber: _mobileNumber,
       dateOfBirth: _dateOfBirth,
+      state: _state,
       education: _education,
       branch: _branch,
       graduationYear: _graduationYear,
@@ -164,7 +166,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              'XK',
+              'Y',
               style: TextStyle(
                 fontSize: 48,
                 fontWeight: FontWeight.w900,
@@ -243,6 +245,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             suffixIcon: const Icon(Icons.calendar_today),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
+        ),
+        const SizedBox(height: 24),
+        DropdownButtonFormField<String>(
+          value: _state,
+          decoration: InputDecoration(labelText: 'State', border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+          items: ['Andhra Pradesh', 'Telangana', 'Delhi', 'Maharashtra', 'Karnataka', 'Tamil Nadu', 'Uttar Pradesh', 'Other']
+              .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+              .toList(),
+          onChanged: (v) => setState(() => _state = v!),
         ),
       ],
     );

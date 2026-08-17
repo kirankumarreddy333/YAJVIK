@@ -1,11 +1,11 @@
 {
-    "name": "jobupdtxk",
-    "short_name": "jobupdtxk",
+    "name": "YAJVIK",
+    "short_name": "YAJVIK",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "YAJVIK — Find. Prepare. Apply. Achieve.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

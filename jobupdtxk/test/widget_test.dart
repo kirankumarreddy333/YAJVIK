@@ -8,8 +8,8 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:jobupdtxk/main.dart';
-import 'package:jobupdtxk/services/local_storage_service.dart';
+import 'package:yajvik/main.dart';
+import 'package:yajvik/services/local_storage_service.dart';
 
 void main() {
   testWidgets('App smoke test', (WidgetTester tester) async {

@@ -1,4 +1,4 @@
-package com.example.jobupdtxk
+package com.yajvik.app
 
 import io.flutter.embedding.android.FlutterActivity
 

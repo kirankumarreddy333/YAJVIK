@@ -10,6 +10,9 @@ import 'job_detail_screen.dart';
 import 'daily_questions_screen.dart';
 import 'progress_screen.dart';
 import 'results_screen.dart';
+import 'admit_cards_screen.dart';
+import 'mock_test_screen.dart';
+import 'news_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +22,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _getGreetingTitle(String userName) {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return 'Good morning, $userName 👋';
+    if (hour >= 12 && hour < 17) return 'Good afternoon, $userName 👋';
+    if (hour >= 17 && hour < 21) return 'Good evening, $userName 👋';
+    return 'Good night, $userName 🌙';
+  }
+
+  String _getGreetingSubtitle() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) return 'Stay consistent. Stay prepared. Succeed.';
+    if (hour >= 12 && hour < 17) return 'Keep the momentum going.';
+    if (hour >= 17 && hour < 21) return 'A little progress today builds a better tomorrow.';
+    return 'Rest well. Come back stronger tomorrow.';
+  }
   @override
   void initState() {
     super.initState();
@@ -56,8 +74,10 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text('Good morning, ${profile?.name.split(' ').first ?? 'User'} 👋', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
+          Text(_getGreetingTitle(profile?.name.split(' ').first ?? 'User'), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(_getGreetingSubtitle(), style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.outline)),
+          const SizedBox(height: 24),
           
           // Dashboard Top Row: Streak and Progress
           Row(
@@ -181,7 +201,34 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-
+          const SizedBox(height: 32),
+          const Text('QUICK ACTIONS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+          const SizedBox(height: 16),
+          GridView.count(
+            crossAxisCount: 4,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 8,
+            children: [
+              _buildQuickAction(context, 'Jobs', '🔎', () {}),
+              _buildQuickAction(context, 'Preparation', '📚', () {}),
+              _buildQuickAction(context, 'News', '📰', () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const NewsScreen()));
+              }),
+              _buildQuickAction(context, 'Mock Tests', '📝', () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const MockTestScreen(testName: 'Full Mock Test 1')));
+              }),
+              _buildQuickAction(context, 'Prev. Papers', '📄', () {}),
+              _buildQuickAction(context, 'Results', '🏆', () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const ResultsScreen()));
+              }),
+              _buildQuickAction(context, 'Admit Cards', '🎫', () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const AdmitCardsScreen()));
+              }),
+              _buildQuickAction(context, 'Calendar', '📅', () {}),
+            ],
+          ),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -241,6 +288,33 @@ class _HomeScreenState extends State<HomeScreen> {
                 onBookmarkTap: () => context.read<JobProvider>().toggleBookmark(job.id),
               ),
             )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickAction(BuildContext context, String label, String emoji, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(emoji, style: const TextStyle(fontSize: 24)),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

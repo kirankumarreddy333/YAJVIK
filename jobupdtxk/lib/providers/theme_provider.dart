@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  static const _prefsKey = 'jobupdtxk_theme_mode';
+  static const _prefsKey = 'yajvik_theme_mode';
 
   ThemeMode _mode = ThemeMode.system;
   ThemeMode get mode => _mode;

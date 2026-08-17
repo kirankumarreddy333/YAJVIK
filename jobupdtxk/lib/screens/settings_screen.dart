@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart';
+import '../providers/locale_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -23,6 +24,26 @@ class SettingsScreen extends StatelessWidget {
             trailing: Switch(
               value: theme.brightness == Brightness.dark,
               onChanged: (_) => context.read<ThemeProvider>().toggle(),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.language),
+            title: const Text('Language'),
+            trailing: DropdownButton<String>(
+              value: context.watch<LocaleProvider>().locale.languageCode,
+              underline: const SizedBox(),
+              items: const [
+                DropdownMenuItem(value: 'en', child: Text('English')),
+                DropdownMenuItem(value: 'hi', child: Text('हिंदी')),
+                DropdownMenuItem(value: 'te', child: Text('తెలుగు')),
+              ],
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  context.read<LocaleProvider>().setLocale(Locale(newValue));
+                }
+              },
             ),
           ),
           const SizedBox(height: 24),
